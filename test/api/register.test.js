@@ -29,7 +29,7 @@ describe('POST /register', () => {
         expect(response.body.error).to.equal('Username and password required')
     });
 
-    it.only('Should return status code 409, and fail to register a username that already exists', async () => {
+    it('Should return status code 409, and fail to register a username that already exists', async () => {
         let newUsername = randomName();
         let response = await registerUser(newUsername, '123456');
         let secondResponse = await registerUser(newUsername, '123456');
