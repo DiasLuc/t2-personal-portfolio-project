@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 // API routes
 app.use('/', userRoutes);
 app.use('/books', bookRoutes);
+app.use('/books', reviewRoutes);
 app.use('/', reviewRoutes);
 
 // Swagger setup
