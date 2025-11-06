@@ -19,14 +19,14 @@ describe('POST /register', () => {
     it('Should return status code 400, and fail to register user without a username', async () => {
         let response = await registerUser('', '123456');
         expect(response.statusCode).to.equal(400);
-        expect(response.body.error).to.equal('Username and password required')
+        expect(response.body.error).to.equal('Username and password required');
     });
 
     it('Should return status code 400, and fail to register user without a password', async () => {
         let newUsername = randomName();
         let response = await registerUser(newUsername, '');
         expect(response.statusCode).to.equal(400);
-        expect(response.body.error).to.equal('Username and password required')
+        expect(response.body.error).to.equal('Username and password required');
     });
 
     it('Should return status code 409, and fail to register a username that already exists', async () => {
@@ -35,7 +35,7 @@ describe('POST /register', () => {
         let secondResponse = await registerUser(newUsername, '123456');
         expect(response.statusCode).to.equal(201);
         expect(secondResponse.statusCode).to.equal(409);
-        expect(secondResponse.body.error).to.equal('User already exists')
+        expect(secondResponse.body.error).to.equal('User already exists');
     });
     
 });
