@@ -18,7 +18,6 @@ describe('POST /login', () => {
 
     it('Should return status code 401, and fail to login when valid username, but invalid password are provided', async () => {
         let response = await loginUser('alice', 'wrongpassword');
-    
         expect(response.statusCode).to.equal(401);
         expect(response.body).to.not.have.property('token');
         expect(response.body).to.have.property('error');
@@ -26,8 +25,7 @@ describe('POST /login', () => {
     });
 
     it('Should return status code 400, and fail to login when a password is passed in without a username', async () => {
-        let response = await loginUser('', 'password123');
-        console.log(`DEBUG: ${response.body.error}`)
+        let response = await loginUser('', 'password123'); 
         expect(response.statusCode).to.equal(400);
         expect(response.body).to.not.have.property('token');
         expect(response.body).to.have.property('error');
@@ -36,7 +34,6 @@ describe('POST /login', () => {
 
     it('Should return status code 400, and fail to login when a username is passed in without a password', async () => {
         let response = await loginUser('alice', '');
-        console.log(`DEBUG: ${response.body.error}`)
         expect(response.statusCode).to.equal(400);
         expect(response.body).to.not.have.property('token');
         expect(response.body).to.have.property('error');
