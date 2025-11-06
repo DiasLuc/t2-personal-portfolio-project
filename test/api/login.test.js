@@ -12,8 +12,7 @@ describe('POST /login', () => {
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.have.property('token');
         expect(response.body).to.not.have.property('error');
-        expect(response.body.token).to.be.a('string');
-        
+        expect(response.body.token).to.be.a('string'); 
     });
 
     it('Should return status code 401, and fail to login when valid username, but invalid password are provided', async () => {
