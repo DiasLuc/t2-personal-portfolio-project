@@ -24,8 +24,11 @@ describe('Books', () => {
     });
 
     describe('POST /books', () => {
+        let token;
+        beforeEach(async () =>{
+            token = await getToken('alice', 'password123');
+        });
         it('Should return status code 201, and add book to the database, returning an object with the book id, title, and author', async () => {
-            let token = await getToken('alice', 'password123');
             let bookTitle = 'First Book Title';
             let bookAuthor = 'First Book Author';
             response = await addBook(token, bookTitle, bookAuthor);
@@ -40,7 +43,6 @@ describe('Books', () => {
         });
 
         it('Should return status code 400, and fail to add book to the database when no book title is passed in, returning an error message stating that title and author are required', async () => {
-            let token = await getToken('alice', 'password123');
             let bookTitle = '';
             let bookAuthor = 'Second Book Author';
             response = await addBook(token, bookTitle, bookAuthor);
@@ -51,7 +53,6 @@ describe('Books', () => {
         });
 
         it('Should return status code 400, and fail to add book to the database when no book author is passed in, returning an error message stating that title and author are required', async () => {
-            let token = await getToken('alice', 'password123');
             let bookTitle = 'Third Book Title';
             let bookAuthor = '';
             response = await addBook(token, bookTitle, bookAuthor);
@@ -62,7 +63,7 @@ describe('Books', () => {
         });
 
         it('Should return status code 401, and fail to add book to the database when no authentication token is passed in, returning an error message stating that token is required', async () => {
-            let token = '';
+            token = '';
             let bookTitle = 'Fourth Book Title';
             let bookAuthor = 'Fourth Book Author';
             response = await addBook(token, bookTitle, bookAuthor);
@@ -73,7 +74,7 @@ describe('Books', () => {
         });
 
         it('Should return status code 403, and fail to add book to the database when an invalid authentication token is passed in, returning an error message stating that token is invalid', async () => {
-            let token = 'Invalid Token';
+            token = 'Invalid Token';
             let bookTitle = 'Fourth Book Title';
             let bookAuthor = 'Fourth Book Author';
             response = await addBook(token, bookTitle, bookAuthor);
@@ -83,5 +84,13 @@ describe('Books', () => {
             expect(response.body.error).to.equal('Invalid token');
         });
 
+    });
+
+    describe('GET /books/{bookId}/reviews', () => {
+        
+    });
+
+    describe('POST /books/{bookId}/reviews', () => {
+        
     });
 });
