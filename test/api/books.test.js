@@ -116,10 +116,10 @@ describe('Books', () => {
         beforeEach(async () =>{
             token = await getToken('alice', 'password123');
         });
-        it('Should return status code 201, successfully add review to database when passing in valid rating, and review text. Should return the review object with its id, bookId, userId, username, rating, and text', async () => {
+        it('Should return status code 201, successfully add review to database when passing in valid user auth token, valid rating, and review text. Should return the review object with its id, bookId, userId, username, rating, and text', async () => {
             let bookId = 2;
             let rating = 8;
-            let reviewText = 'This is my review text';
+            let reviewText = 'This is my review text 1';
             const response = await addReview(token, bookId, rating, reviewText);
             expect(response.statusCode).to.equal(201);
             expect(response.body.id).to.exist;
@@ -131,8 +131,49 @@ describe('Books', () => {
 
         });
 
-        it('Should return status code 201, successfully add review to database, and return the review object with its id, bookId, userId, username, rating, and text', async () => {
-            
+        it('Should return status code 400, and fail to add review when passing in valid user auth token and review text, but no rating.', async () => {
+            let bookId = 2;
+            let rating;
+            let reviewText = 'This is my review text 2';
+            const response = await addReview(token, bookId, rating, reviewText);
+            expect(response.statusCode).to.equal(400);
+            expect(response.body.error).to.equal('Rating and text required');
+        });
+
+        it('Should return status code 400, and fail to add review when passing in valid user auth token and review text, and out-of-range rating.', async () => {
+            let bookId = 2;
+            let rating = 12;
+            let reviewText = 'This is my review text 3';
+            const response = await addReview(token, bookId, rating, reviewText);
+            expect(response.statusCode).to.equal(400);
+            expect(response.body.error).to.equal('Rating must be between 1 and 10');
+        });
+
+        it('Should return status code 400, and fail to add review when passing in valid user auth token and valid rating, but no review text.', async () => {
+            let bookId = 2;
+            let rating = 7;
+            let reviewText = '';
+            const response = await addReview(token, bookId, rating, reviewText);
+            expect(response.statusCode).to.equal(400);
+            expect(response.body.error).to.equal('Rating and text required');
+        });
+
+        it('Should return status code 401, and fail to add review when passing in no user auth token, but valid rating and review text.', async () => {
+            let bookId = 2;
+            let rating = 9;
+            let reviewText = 'This is my review text 5';
+            const response = await addReview('', bookId, rating, reviewText);
+            expect(response.statusCode).to.equal(401);
+            expect(response.body.error).to.equal('Token required');
+        });
+
+        it('Should return status code 403, and fail to add review when passing in invalid user auth token, but valid rating and review text.', async () => {
+            let bookId = 2;
+            let rating = 4;
+            let reviewText = 'This is my review text 5';
+            const response = await addReview('Invalid Token', bookId, rating, reviewText);
+            expect(response.statusCode).to.equal(403);
+            expect(response.body.error).to.equal('Invalid token');
         });
     });
 });
