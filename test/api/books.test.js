@@ -2,6 +2,7 @@ const request =  require('supertest');
 const { expect } = require('chai');
 require('dotenv').config();
 
+const { getBooks } = require('../../helpers/getBooks.js');
 const { getToken } = require('../../helpers/getToken.js');
 const { addBook } = require('../../helpers/addBook.js');
 const { getReviews } = require('../../helpers/getReviews.js');
@@ -10,16 +11,15 @@ const { addReview } = require('../../helpers/addReview.js');
 describe('Books', () => {
     describe('GET /books', () => {
         it('Should return status code 200, and a list with all the books in the database', async () => {
-            const response = await request(process.env.BASE_URL)
-                    .get('/books')
-                    .set('Content-Type', 'application/json')
+            const response = await getBooks();
             
             expect(response.statusCode).to.equal(200);
             expect(response.body).to.be.an('array');
-            response.body.forEach(item => {
-                expect(item).to.have.property('id');
-                expect(item).to.have.property('title');
-                expect(item).to.have.property('author');
+            response.body.forEach(book => {
+                expect(book).to.be.an('object')
+                expect(book).to.have.property('id');
+                expect(book).to.have.property('title');
+                expect(book).to.have.property('author');
             });
         });
     });
