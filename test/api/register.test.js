@@ -8,27 +8,27 @@ const randomName = require('node-random-name');
 const { registerUser } = require('../../helpers/registerUser.js');
 
 describe('POST /register', () => {
-    it('Should return status code 201, and user should be created successfully', async () => {
+    it('Should create user successfully, and return status code 201', async () => {
         const newUsername = randomName();
         const response = await registerUser(newUsername, '123456');
         expect(response.statusCode).to.equal(201);
         expect(response.body.username).to.equal(newUsername);
     });
 
-    it('Should return status code 400, and fail to register user without a username', async () => {
+    it('Should fail to register user without a username, and return status code 400', async () => {
         const response = await registerUser('', '123456');
         expect(response.statusCode).to.equal(400);
         expect(response.body.error).to.equal('Username and password required');
     });
 
-    it('Should return status code 400, and fail to register user without a password', async () => {
+    it('Should fail to register user without a password, and return status code 400', async () => {
         const newUsername = randomName();
         const response = await registerUser(newUsername, '');
         expect(response.statusCode).to.equal(400);
         expect(response.body.error).to.equal('Username and password required');
     });
 
-    it('Should return status code 409, and fail to register a username that already exists', async () => {
+    it('Should fail to register a username that already exists, and return status code 409', async () => {
         const newUsername = randomName();
         const response = await registerUser(newUsername, '123456');
         const secondResponse = await registerUser(newUsername, '123456');
