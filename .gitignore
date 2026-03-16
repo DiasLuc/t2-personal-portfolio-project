@@ -143,3 +143,6 @@ mochawesome-report/
 
 # MacOS files
 .DS_store
+
+# k6 reports
+html-report.html
