@@ -1,7 +1,7 @@
-const request =  require('supertest');
 const { expect } = require('chai');
 require('dotenv').config();
 
+const { getBooks } = require('../../helpers/getBooks.js');
 const { getToken } = require('../../helpers/getToken.js');
 const { addBook } = require('../../helpers/addBook.js');
 const { getReviews } = require('../../helpers/getReviews.js');
@@ -9,17 +9,16 @@ const { addReview } = require('../../helpers/addReview.js');
 
 describe('Books', () => {
     describe('GET /books', () => {
-        it('Should return status code 200, and a list with all the books in the database', async () => {
-            const response = await request(process.env.BASE_URL)
-                    .get('/books')
-                    .set('Content-Type', 'application/json')
+        it('Should return a list with all the books in the database, and return status code 200', async () => {
+            const response = await getBooks();
             
             expect(response.statusCode).to.equal(200);
             expect(response.body).to.be.an('array');
-            response.body.forEach(item => {
-                expect(item).to.have.property('id');
-                expect(item).to.have.property('title');
-                expect(item).to.have.property('author');
+            response.body.forEach(book => {
+                expect(book).to.be.an('object')
+                expect(book).to.have.property('id');
+                expect(book).to.have.property('title');
+                expect(book).to.have.property('author');
             });
         });
     });
@@ -29,7 +28,7 @@ describe('Books', () => {
         beforeEach(async () =>{
             token = await getToken('alice', 'password123');
         });
-        it('Should return status code 201, and add book to the database, returning an object with the book id, title, and author', async () => {
+        it('Should add book to the database, returning an object with the book id, title, and author, and return status code 201', async () => {
             let bookTitle = 'First Book Title';
             let bookAuthor = 'First Book Author';
             const response = await addBook(token, bookTitle, bookAuthor);
@@ -43,7 +42,7 @@ describe('Books', () => {
             expect(response.body).to.not.have.property('error');
         });
 
-        it('Should return status code 400, and fail to add book to the database when no book title is passed in, returning an error message stating that title and author are required', async () => {
+        it('Should fail to add book to the database when no book title is passed in, returning status code 400, and an error message stating that title and author are required  ', async () => {
             let bookTitle = '';
             let bookAuthor = 'Second Book Author';
             const response = await addBook(token, bookTitle, bookAuthor);
@@ -53,7 +52,7 @@ describe('Books', () => {
             expect(response.body.error).to.equal('Title and author required');
         });
 
-        it('Should return status code 400, and fail to add book to the database when no book author is passed in, returning an error message stating that title and author are required', async () => {
+        it('Should fail to add book to the database when no book author is passed in, returning status code 400, and an error message stating that title and author are required', async () => {
             let bookTitle = 'Third Book Title';
             let bookAuthor = '';
             const response = await addBook(token, bookTitle, bookAuthor);
@@ -63,7 +62,7 @@ describe('Books', () => {
             expect(response.body.error).to.equal('Title and author required');
         });
 
-        it('Should return status code 401, and fail to add book to the database when no authentication token is passed in, returning an error message stating that token is required', async () => {
+        it('Should fail to add book to the database when no authentication token is passed in, returning status code 401, and an error message stating that token is required', async () => {
             token = '';
             let bookTitle = 'Fourth Book Title';
             let bookAuthor = 'Fourth Book Author';
@@ -74,7 +73,7 @@ describe('Books', () => {
             expect(response.body.error).to.equal('Token required');
         });
 
-        it('Should return status code 403, and fail to add book to the database when an invalid authentication token is passed in, returning an error message stating that token is invalid', async () => {
+        it('Should fail to add book to the database when an invalid authentication token is passed in, returning status code 403, and an error message stating that token is invalid', async () => {
             token = 'Invalid Token';
             let bookTitle = 'Fourth Book Title';
             let bookAuthor = 'Fourth Book Author';
@@ -88,7 +87,7 @@ describe('Books', () => {
     });
 
     describe('GET /books/{bookId}/reviews', () => {
-        it('Should return status code 200, and return a list of book review objects for the valid bookId passed in', async () => {
+        it('Should return a list of book review objects for the valid bookId passed in, and return status code 200', async () => {
             const response = await getReviews(2);
             expect(response.statusCode).to.equal(200);
             expect(response.body).to.be.an('array');
@@ -103,7 +102,7 @@ describe('Books', () => {
 
         });
 
-        it('Should return status code 400, and return an error stating that the bookId is invalid when invalid bookId is passed in', async () => {
+        it('Should return an error stating that the bookId is invalid when invalid bookId is passed in, and return status code 400', async () => {
             const response = await getReviews(99999999);
             expect(response.statusCode).to.equal(400);
             expect(response.body).to.have.property('error');
@@ -116,7 +115,7 @@ describe('Books', () => {
         beforeEach(async () =>{
             token = await getToken('alice', 'password123');
         });
-        it('Should return status code 201, successfully add review to database when passing in valid user auth token, valid rating, and review text. Should return the review object with its id, bookId, userId, username, rating, and text', async () => {
+        it('Should successfully add review to database when passing in valid user auth token, valid rating, and review text; and return status code 201', async () => {
             let bookId = 2;
             let rating = 8;
             let reviewText = 'This is my review text 1';
@@ -131,7 +130,7 @@ describe('Books', () => {
 
         });
 
-        it('Should return status code 400, and fail to add review when passing in valid user auth token and review text, but no rating.', async () => {
+        it('Should fail to add review when passing in valid user auth token and review text, but no rating, and return status code 400', async () => {
             let bookId = 2;
             let rating;
             let reviewText = 'This is my review text 2';
@@ -140,7 +139,7 @@ describe('Books', () => {
             expect(response.body.error).to.equal('Rating and text required');
         });
 
-        it('Should return status code 400, and fail to add review when passing in valid user auth token and review text, and out-of-range rating.', async () => {
+        it('Should fail to add review when passing in valid user auth token and review text, and out-of-range rating; and return status code 400', async () => {
             let bookId = 2;
             let rating = 12;
             let reviewText = 'This is my review text 3';
@@ -149,7 +148,7 @@ describe('Books', () => {
             expect(response.body.error).to.equal('Rating must be between 1 and 10');
         });
 
-        it('Should return status code 400, and fail to add review when passing in valid user auth token and valid rating, but no review text.', async () => {
+        it('Should fail to add review when passing in valid user auth token and valid rating, but no review text, and return status code 400', async () => {
             let bookId = 2;
             let rating = 7;
             let reviewText = '';
@@ -158,7 +157,7 @@ describe('Books', () => {
             expect(response.body.error).to.equal('Rating and text required');
         });
 
-        it('Should return status code 401, and fail to add review when passing in no user auth token, but valid rating and review text.', async () => {
+        it('Should fail to add review when passing in no user auth token, but valid rating and review text; and return status code 401', async () => {
             let bookId = 2;
             let rating = 9;
             let reviewText = 'This is my review text 5';
@@ -167,7 +166,7 @@ describe('Books', () => {
             expect(response.body.error).to.equal('Token required');
         });
 
-        it('Should return status code 403, and fail to add review when passing in invalid user auth token, but valid rating and review text.', async () => {
+        it('Should fail to add review when passing in invalid user auth token, but valid rating and review text; and return status code 403', async () => {
             let bookId = 2;
             let rating = 4;
             let reviewText = 'This is my review text 5';

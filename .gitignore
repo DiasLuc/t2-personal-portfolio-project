@@ -140,3 +140,6 @@ vite.config.ts.timestamp-*
 
 #Mochawesome reports
 mochawesome-report/
+
+# MacOS files
+.DS_store
