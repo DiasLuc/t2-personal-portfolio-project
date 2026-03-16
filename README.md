@@ -52,6 +52,15 @@ node app.js
 3. The API will be available at `http://localhost:3000/` (or your configured `PORT`).
 4. Swagger UI is available at `http://localhost:3000/api-docs`.
 
+## Running Tests
+### API Tests with Supertest and Mocha
+```bash
+npm test
+```
+### Performance Tests with k6
+```bash
+K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=html-report.html k6 run ./test/performance/loginUserPerformance.test.js
+```
 ## Sample / pre-populated data
 To make testing easier the repository comes with pre-populated in-memory data (see `model/`):
 
