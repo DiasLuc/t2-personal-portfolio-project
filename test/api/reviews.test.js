@@ -32,14 +32,14 @@ describe('Reviews', () => {
             reviewId = review.body.id;
         });
 
-        it('Should return status code 204, successfully delete review when passing in valid user auth token, valid reviewId, and review belongs to user currently logged in', async () => {
+        it('Should successfully delete review when passing in valid user auth token, valid reviewId, and review belongs to user currently logged in; and return status code 204', async () => {
             const response = await deleteReview(token, reviewId);
             const allReviews = await getReviews(bookId);
             expect(response.statusCode).to.equal(204);
             expect(allReviews.text).to.not.contain(review.text);
         });
 
-        it('Should return status code 403, fail to delete review when passing in valid user auth token, valid reviewId, and review belongs to another user instead of user currently logged in', async () => {
+        it('Should fail to delete review when passing in valid user auth token, valid reviewId, and review belongs to another user instead of user currently logged in, and return status code 403', async () => {
             const secondToken = await getToken('alice', 'password123');
             const response = await deleteReview(secondToken, reviewId);
             const allReviews = await getReviews(bookId);
@@ -48,7 +48,7 @@ describe('Reviews', () => {
             expect(allReviews.text).to.contain(review.text);
         });
 
-        it('Should return status code 401, fail to delete review when not passing in a user auth token, and a valid reviewId.', async () => {
+        it('Should fail to delete review when not passing in a user auth token, and a valid reviewId; and return status code 401', async () => {
             const response = await deleteReview('', reviewId);
             const allReviews = await getReviews(bookId);
             expect(response.statusCode).to.equal(401);
@@ -56,7 +56,7 @@ describe('Reviews', () => {
             expect(allReviews.text).to.contain(review.text);
         });
 
-        it('Should return status code 403, fail to delete review when passing in an invalid user auth token, and a valid reviewId.', async () => {
+        it('Should fail to delete review when passing in an invalid user auth token, and a valid reviewId; and return status code 403', async () => {
             const response = await deleteReview('Invalid Token', reviewId);
             const allReviews = await getReviews(bookId);
             expect(response.statusCode).to.equal(403);
@@ -64,11 +64,11 @@ describe('Reviews', () => {
             expect(allReviews.text).to.contain(review.text);
         });
 
-        it('Should return status code 404, fail to find and delete review when passing in an valid user auth token, and an invalid reviewId.', async () => {
+        it('Should fail to find and delete review when passing in an valid user auth token, and an invalid reviewId; and return status code 404', async () => {
             const response = await deleteReview(token, 9876546876546);
             const allReviews = await getReviews(bookId);
             expect(response.statusCode).to.equal(404);
-            expect(response.body.error).to.equal('Invalid Token');
+            expect(response.body.error).to.equal('Review not found');
             expect(allReviews.text).to.contain(review.text);
         });
 
